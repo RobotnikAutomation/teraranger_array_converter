@@ -174,6 +174,14 @@ class TrArrayConverter(object):
 
         self.range_array_topic = "ranges"
 
+        # Getting scan topic param
+        try:
+            self.scan_topic_name = rospy.get_param("~scan_topic_name")
+        except KeyError:
+            self.scan_topic_name = "scan"
+            rospy.logwarn("Private parameter 'scan_topic_name' is not set."
+                          " Default value 'scan' will be used instead.")
+
         # Getting sensor_mask
         try:
             self.sensor_mask = rospy.get_param("~sensor_mask")
@@ -208,7 +216,7 @@ class TrArrayConverter(object):
 
         # Creating the right publisher
         if self.mode == "laser_scan":
-            self.publisher = rospy.Publisher("scan", LaserScan, queue_size=1)
+            self.publisher = rospy.Publisher(self.scan_topic_name, LaserScan, queue_size=1)
         elif self.mode == "point_cloud":
             self.publisher = rospy.Publisher("point_cloud", PointCloud2,
                                              queue_size=1)
@@ -224,7 +232,7 @@ class TrArrayConverter(object):
             rospy.logwarn("Incorrect value for the parameter 'converter_mode'."
                           " Default value 'laser_scan' will be used instead.")
             self.mode = "laser_scan"
-            self.publisher = rospy.Publisher("scan", LaserScan, queue_size=1)
+            self.publisher = rospy.Publisher(self.scan_topic_name, LaserScan, queue_size=1)
 
         self.tf_buffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tf_buffer)
