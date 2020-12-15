@@ -162,6 +162,8 @@ class TrArrayConverter(object):
             self.ns_prefix = ""
             rospy.logwarn("Error when fetching namespace, pefix \"\" will be used instead")
 
+        self.ns_prefix = self.ns_prefix.replace("/", "_")
+
         # Getting mode param
         try:
             self.mode = rospy.get_param("~converter_mode")
@@ -186,11 +188,11 @@ class TrArrayConverter(object):
             rospy.logwarn("By specifying the conversion frame you will override the automatic namespacing of the conversion_frame")
         except KeyError:
             if self.ns_prefix != "":
-                self.conversion_frame = "base_" + self.ns_prefix
+                self.conversion_frame = self.ns_prefix + "_base"
             else:
                 self.conversion_frame = "base_hub"
             rospy.logwarn("Private parameter 'conversion_frame' is not set."
-                          " Default value 'base + _<namespace>' will be used instead.")
+                          " Default value '<namespace> + _base' will be used instead.")
 
         # Getting refresh transform parameter
         try:
